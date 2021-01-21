@@ -51,15 +51,31 @@ namespace CsvHelper
 		private readonly char[] injectionCharacters;
 		private readonly char injectionEscapeCharacter;
 		private readonly bool sanitizeForInjection;
+		private readonly List<Type> fieldTypes = new List<Type>();
 
 		private bool disposed;
 		private bool hasHeaderBeenWritten;
-		private bool hasRecordBeenWritten;
 		private int row = 1;
 		private int index;
 		private char[] buffer;
 		private int bufferSize;
 		private int bufferPosition;
+
+		/// <inheritdoc/>
+		public virtual Type FieldType
+		{
+			get
+			{
+				if (fieldTypes.Count == 0)
+				{
+					return null;
+				}
+
+				var i = index < fieldTypes.Count ? index : index - 1;
+
+				return fieldTypes[i];
+			}
+		}
 
 		/// <inheritdoc/>
 		public virtual string[] HeaderRecord { get; private set; }
@@ -137,6 +153,11 @@ namespace CsvHelper
 				field = field.Trim();
 			}
 
+			if (fieldTypes.Count <= index)
+			{
+				fieldTypes.Add(typeof(string));
+			}
+
 			var shouldQuoteResult = shouldQuote(field, this);
 
 			WriteField(field, shouldQuoteResult);
@@ -182,6 +203,7 @@ namespace CsvHelper
 		public virtual void WriteField<T>(T field, ITypeConverter converter)
 		{
 			var type = field == null ? typeof(string) : field.GetType();
+			fieldTypes.Add(type);
 			reusableMemberMapData.TypeConverter = converter;
 			if (!typeConverterOptionsCache.TryGetValue(type, out TypeConverterOptions typeConverterOptions))
 			{
@@ -553,6 +575,7 @@ namespace CsvHelper
 
 			index = 0;
 			row++;
+			fieldTypes.Clear();
 		}
 
 		/// <inheritdoc/>
@@ -563,6 +586,7 @@ namespace CsvHelper
 
 			index = 0;
 			row++;
+			fieldTypes.Clear();
 		}
 
 		/// <inheritdoc/>

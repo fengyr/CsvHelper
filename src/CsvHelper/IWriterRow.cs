@@ -3,6 +3,7 @@
 // See LICENSE.txt for details or visit http://www.opensource.org/licenses/ms-pl.html for MS-PL and http://opensource.org/licenses/Apache-2.0 for Apache 2.0.
 // https://github.com/JoshClose/CsvHelper
 using System;
+using System.Collections.Generic;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
@@ -13,6 +14,11 @@ namespace CsvHelper
 	/// </summary>
 	public interface IWriterRow
 	{
+		/// <summary>
+		/// The field type for the current row and field index.
+		/// </summary>
+		Type FieldType { get; }
+
 		/// <summary>
 		/// The header record.
 		/// </summary>

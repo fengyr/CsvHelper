@@ -138,15 +138,15 @@ class Build : NukeBuild
     Target Push => _ => _
         //.DependsOn(Pack)
         .Consumes(Pack)
-        .Requires(() => Configuration == Configuration.Release)
+        //.Requires(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
             DotNetNuGetPush(s => s
 				.SetSource(NugetSource)
 				.SetApiKey(NugetApiKey)
-				//.CombineWith(ArtifactsDirectory.GlobFiles("*.nupkg"), (s, v) => s
-				//	.SetTargetPath(v)
-				//)
+				.CombineWith(ArtifactsDirectory.GlobFiles("*.nupkg"), (s, v) => s
+					.SetTargetPath(v)
+				)
             );
         });
 
